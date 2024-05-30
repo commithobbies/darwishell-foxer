@@ -123,7 +123,17 @@
 //   _tryRetain/_isDeallocating/retainWeakReference/allowsWeakReference
 #define FAST_HAS_DEFAULT_RR     (1UL<<2)
 // data pointer
+#ifdef DARLING
+// XNU only supports up to 47-bit address space on AArch64
+// (see T0SZ_BOOT in osfmk/arm64/proc_reg.h), but Linux
+// normally uses 48-bit one, and can support 52-bit one
+// on hardware with FEAT_LVA. Fortunately, Apple doesn't
+// seem to use the upper bits for any flags, so we can just
+// extend the mask to cover them.
+#define FAST_DATA_MASK          0xfffffffffffffff8UL
+#else
 #define FAST_DATA_MASK          0x00007ffffffffff8UL
+#endif
 
 #if __arm64__
 // class or superclass has .cxx_construct/.cxx_destruct implementation
